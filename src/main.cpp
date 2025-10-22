@@ -50,21 +50,23 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Single triangle coordinates in a 3D position
-	float vertices[] {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+//	float vertices[] {
+//		-0.5f, -0.5f, 0.0f,
+//		 0.5f, -0.5f, 0.0f,
+//		 0.0f,  0.5f, 0.0f
+//	};
+
+	// Two Triangles (Rectangle)
+	float vertices[] = {
+		 0.5f,  0.5f, 0.0f,	// top right
+		 0.5f, -0.5f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f  // top left
 	};
-
-	// Generate a vertex buffer object (VBO)
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-
-	// Bind the created buffer VBO to the OpenGL VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// Copy the vertex data into the buffer's memory
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	unsigned int indices[] = {
+		0, 1, 3,	// first triangle
+		1, 2, 3		// second triangle
+	};
 	
 	// Create a shader object
 	unsigned int vertexShader;
@@ -122,16 +124,34 @@ int main() {
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 
-	// Bind VAO
+	// Create Element Buffer Object (EBO)
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	// Create a vertex buffer object (VBO)
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+
+
+	// Bind VAO first
 	glBindVertexArray(VAO);
 
 	// Copy our vertices array in a buffer for OpenGL to use
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	// Bind the created buffer EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+	// Copy the indicies data into the buffer
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	// Set our vertex attributes pointers
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
 	glEnableVertexAttribArray(0);
+
+	// Uncomment this call to draw in wireframe polygons
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Render loop - keep running/drawing the window until explicitly stopped
 	while (!glfwWindowShouldClose(window)) {
@@ -145,7 +165,8 @@ int main() {
 		// Draw our first triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 		// Check and call events and swap the buffers
 		glfwSwapBuffers(window);
