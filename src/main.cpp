@@ -46,9 +46,6 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 	}
 	
-	// Tell OpenGL the size of the rendering window
-//	glViewport(0, 0, 800, 600);
-
 	// Register callback function to run each time user resizes the window
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -117,16 +114,9 @@ int main() {
 		std::cout << "ERROR::PROGRAM::SHADER::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 
-	// Activate shader program
-	glUseProgram(shaderProgram);
-
 	// Clean up shader objects - no longer needed after attaching to program object
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-	
-	// Tell OpenGL how it should interpret the vertex data (per vertex attribute)
-//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-//	glEnableVertexAttribArray(0);
 	
 	// Generate a Vertex Array Object (VAO)
 	unsigned int VAO;
